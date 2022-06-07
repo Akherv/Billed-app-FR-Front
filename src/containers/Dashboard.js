@@ -53,7 +53,16 @@ export const card = (bill) => {
 }
 
 export const cards = (bills) => {
-  return bills && bills.length ? bills.map(bill => card(bill)).join("") : ""
+  // console.log(bills)
+  // return bills && bills.length ? bills.map(bill => card(bill)).join("") : ""
+
+  return (bills && bills.length) ? bills
+  .sort((a,b)=> {
+    let date1 = a.date !== null ? a.date : '1970-01-01';
+    let date2 = b.date !== null ? b.date : '1970-01-01';
+     return (date1 < date2) ? 1 : -1
+  })
+  .map(bill => card(bill)).join("") : ""
 }
 
 export const getStatus = (index) => {
@@ -85,9 +94,10 @@ export default class {
     if (typeof $('#modaleFileAdmin1').modal === 'function') $('#modaleFileAdmin1').modal('show')
   }
 
-  handleEditTicket(e, bill, bills) {
+  handleEditTicket(e, bill, bills, containerIdx) {
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id
+   //console.log('-->edit',this,'\n','-->counter', this.counter,'\n','-->index', containerIdx)
     if (this.counter % 2 === 0) {
       bills.forEach(b => {
         $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
@@ -96,9 +106,8 @@ export default class {
       $('.dashboard-right-container div').html(DashboardFormUI(bill))
       $('.vertical-navbar').css({ height: '150vh' })
       this.counter ++
-    } else {
+    } else { 
       $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' })
-
       $('.dashboard-right-container div').html(`
         <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
       `)
@@ -131,26 +140,32 @@ export default class {
   }
 
   handleShowTickets(e, bills, index) {
-    if (this.counter === undefined || this.index !== index) this.counter = 0
+    if (this.counter === undefined || (this.index !== index && !e.currentTarget.className.match('openTicketsList'))) {
+      this.counter = 0;
+    } else if (e.currentTarget.className.match('openTicketsList')) {
+      this.counter = 1;
+    }
     if (this.index === undefined || this.index !== index) this.index = index
+    console.log('-->show',e, this,'\n','-->counter', this.counter,'\n','-->index', this.index)
+    const arrFilteredBills = filteredBills(bills, getStatus(index))
     if (this.counter % 2 === 0) {
-      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)'})
-      $(`#status-bills-container${this.index}`)
-        .html(cards(filteredBills(bills, getStatus(this.index))))
+      $(`#arrow-icon${index}`).css({ transform: 'rotate(0deg)'})
+      $(`#arrow-icon${index}`).addClass('openTicketsList')
+      $(`#status-bills-container${index}`)
+        .html(cards(arrFilteredBills))
+        arrFilteredBills.forEach(bill => {
+          $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills, index))
+        })
       this.counter ++
     } else {
       $(`#arrow-icon${this.index}`).css({ transform: 'rotate(90deg)'})
+      $(`#arrow-icon${index}`).removeClass('openTicketsList')
       $(`#status-bills-container${this.index}`)
         .html("")
       this.counter ++
     }
 
-    bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-    })
-
     return bills
-
   }
 
   getBillsAllUsers = () => {

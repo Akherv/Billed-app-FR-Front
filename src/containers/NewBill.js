@@ -24,8 +24,13 @@ export default class NewBill {
     const email = JSON.parse(localStorage.getItem("user")).email
     console.group(file)
     if (file.type.match(/^image\/(jpg|jpeg|png)$/)) {
+      //console.log(file.type)
       formData.append('file', file)
+      $('#error-message').text('')
+    } else {
+      $('#error-message').text('Ce format pas accepté, veuillez inclure un fichier de type .jpg, .jpeg ou .png')
     }
+
     formData.append('email', email)
 
     this.store
@@ -37,7 +42,7 @@ export default class NewBill {
         }
       })
       .then(({fileUrl, key}) => {
-        console.log(fileUrl)
+        //console.log(fileUrl)
         this.billId = key
         this.fileUrl = fileUrl
         this.fileName = fileName
@@ -45,7 +50,7 @@ export default class NewBill {
   }
   handleSubmit = e => {
     e.preventDefault()
-    console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
+    //console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,
@@ -65,6 +70,7 @@ export default class NewBill {
   }
 
   // not need to cover this function by tests
+  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store

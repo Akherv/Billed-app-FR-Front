@@ -19,11 +19,12 @@ describe("Given that I am a user on login page", () => {
       expect(inputPasswordUser.value).toBe("");
 
       const form = screen.getByTestId("form-employee");
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmitEmployee = jest.fn((e) => e.preventDefault());
 
-      form.addEventListener("submit", handleSubmit);
+      form.addEventListener("submit", handleSubmitEmployee);
       fireEvent.submit(form);
       expect(screen.getByTestId("form-employee")).toBeTruthy();
+      expect(screen.getByTestId("loginTitle")).toBeTruthy();
     });
   });
 
@@ -40,11 +41,12 @@ describe("Given that I am a user on login page", () => {
       expect(inputPasswordUser.value).toBe("azerty");
 
       const form = screen.getByTestId("form-employee");
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmitEmployee = jest.fn((e) => e.preventDefault());
 
-      form.addEventListener("submit", handleSubmit);
+      form.addEventListener("submit", handleSubmitEmployee);
       fireEvent.submit(form);
       expect(screen.getByTestId("form-employee")).toBeTruthy();
+      expect(screen.getByTestId("loginTitle")).toBeTruthy();
     });
   });
 
@@ -94,11 +96,11 @@ describe("Given that I am a user on login page", () => {
         store,
       });
 
-      const handleSubmit = jest.fn(login.handleSubmitEmployee);
+      const handleSubmitEmployee = jest.fn(login.handleSubmitEmployee);
       login.login = jest.fn().mockResolvedValue({});
-      form.addEventListener("submit", handleSubmit);
+      form.addEventListener("submit", handleSubmitEmployee);
       fireEvent.submit(form);
-      expect(handleSubmit).toHaveBeenCalled();
+      expect(handleSubmitEmployee).toHaveBeenCalled();
       expect(window.localStorage.setItem).toHaveBeenCalled();
       expect(window.localStorage.setItem).toHaveBeenCalledWith(
         "user",
@@ -115,6 +117,7 @@ describe("Given that I am a user on login page", () => {
       expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
     });
   });
+
 });
 
 describe("Given that I am a user on login page", () => {
@@ -129,11 +132,12 @@ describe("Given that I am a user on login page", () => {
       expect(inputPasswordUser.value).toBe("");
 
       const form = screen.getByTestId("form-admin");
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmitAdmin = jest.fn((e) => e.preventDefault());
 
-      form.addEventListener("submit", handleSubmit);
+      form.addEventListener("submit", handleSubmitAdmin);
       fireEvent.submit(form);
       expect(screen.getByTestId("form-admin")).toBeTruthy();
+      expect(screen.getByTestId("loginTitle")).toBeTruthy();
     });
   });
 
@@ -150,11 +154,12 @@ describe("Given that I am a user on login page", () => {
       expect(inputPasswordUser.value).toBe("azerty");
 
       const form = screen.getByTestId("form-admin");
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmitAdmin = jest.fn((e) => e.preventDefault());
 
-      form.addEventListener("submit", handleSubmit);
+      form.addEventListener("submit", handleSubmitAdmin);
       fireEvent.submit(form);
       expect(screen.getByTestId("form-admin")).toBeTruthy();
+      expect(screen.getByTestId("loginTitle")).toBeTruthy();
     });
   });
 
@@ -206,11 +211,11 @@ describe("Given that I am a user on login page", () => {
         store,
       });
 
-      const handleSubmit = jest.fn(login.handleSubmitAdmin);
+      const handleSubmitAdmin = jest.fn(login.handleSubmitAdmin);
       login.login = jest.fn().mockResolvedValue({});
-      form.addEventListener("submit", handleSubmit);
+      form.addEventListener("submit", handleSubmitAdmin);
       fireEvent.submit(form);
-      expect(handleSubmit).toHaveBeenCalled();
+      expect(handleSubmitAdmin).toHaveBeenCalled();
       expect(window.localStorage.setItem).toHaveBeenCalled();
       expect(window.localStorage.setItem).toHaveBeenCalledWith(
         "user",
@@ -227,4 +232,5 @@ describe("Given that I am a user on login page", () => {
       expect(screen.queryByText("Validations")).toBeTruthy();
     });
   });
+
 });
