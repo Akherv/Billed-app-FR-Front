@@ -27,39 +27,53 @@ export default class {
     $('#modaleFile').modal('show')
   }
 
+  //cleanNullBills = () => {
+  //   if (this.store) {
+  //   this.store
+  //   .bills()
+  //   .list()
+  //   .then(arr=>{
+  //     const res = arr.filter(el=> el.status === null)
+  //        if (res.length > 0) {
+  //         res.map(el=>{
+  //           try {
+  //             return this.store.bills().delete({selector: el.id})
+  //           } catch {
+  //             throw error;
+  //           }
+  //         })
+  //        } 
+  //        return res
+  //       })
+  //   }
+  // }
+
   getBills = () => {
     if (this.store) {
-      return this.store
-      .bills()
-      .list()
-      .then(snapshot => {
-        const bills = snapshot
-          .map(doc => {
-            try {
-              //console.log(doc)
-              return {
-                ...doc,
-                date: doc.date,
-                //date: formatDate(doc.date),
-                status: formatStatus(doc.status)
+      // try {
+       // this.cleanNullBills()
+      // } catch(e) {
+      //   throw error;
+      // } finally {
+        return this.store
+        .bills()
+        .list()
+        .then(snapshot => {
+          const bills = snapshot
+            .map(doc => {
+              try {
+                return {
+                  ...doc,
+                  date: doc.date,
+                  status: formatStatus(doc.status)
+                }
+              } catch(e) {
+                throw error;
               }
-            } catch(e) {
-              throw error;
-            //   // if for some reason, corrupted data was introduced, we manage here failing formatDate function
-            //   // log the error and return unformatted date in that case
-            //   console.log(e,'for',doc)
-            //   return {
-            //     ...doc,
-            //     date: doc.date,
-            //     status: formatStatus(doc.status)
-            //   }
-            }
-          })
-          // console.log('length', bills.length)
-          // console.log('--->',bills)
-          // console.log('--->',bills.map(el=>el.date))
-        return bills
-      })
+            })
+          return bills
+        })
+      }
     }
-  }
+  // }
 }

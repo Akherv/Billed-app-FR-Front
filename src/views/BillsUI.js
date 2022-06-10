@@ -7,7 +7,7 @@ import Actions from './Actions.js'
 
 const row = (bill) => {
   return (`
-    <tr>
+    <tr data-testid="row">
       <td>${bill.type}</td>
       <td>${bill.name}</td>
       <td data-testid="${bill.date}" >${formatDate(bill.date)}</td>
@@ -31,7 +31,7 @@ const rows = (data) => {
 }
 
 export default ({ data: bills, loading, error }) => {
-  
+
   const modal = () => (`
     <div class="modal fade" id="modaleFile" data-testId="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -62,7 +62,7 @@ export default ({ data: bills, loading, error }) => {
       <div class='content'>
         <div class='content-header'>
           <div class='content-title'> Mes notes de frais </div>
-          <button type="button" data-testid='btn-new-bill' class="btn btn-primary">Nouvelle note de frais</button>
+          <button type="button" data-testid="btn-new-bill" class="btn btn-primary">Nouvelle note de frais</button>
         </div>
         <div id="data-table">
         <table id="example" class="table table-striped" style="width:100%">

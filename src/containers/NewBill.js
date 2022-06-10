@@ -13,44 +13,48 @@ export default class NewBill {
     this.fileUrl = null
     this.fileName = null
     this.billId = null
+    this.formData = null
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
     e.preventDefault()
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`)
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
-    const formData = new FormData()
+    this.fileName = filePath[filePath.length-1]
+    this.formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
-    console.group(file)
+    this.formData.append('file', file)
+    this.formData.append('email', email)
+
     if (file.type.match(/^image\/(jpg|jpeg|png)$/)) {
-      //console.log(file.type)
-      formData.append('file', file)
       $('#error-message').text('')
-    } else {
-      $('#error-message').text('Ce format pas accepté, veuillez inclure un fichier de type .jpg, .jpeg ou .png')
-    }
-
-    formData.append('email', email)
-
-    this.store
+      fileInput.classList.remove('invalid')
+      this.store
       .bills()
       .create({
-        data: formData,
+        data: this.formData,
         headers: {
           noContentType: true
         }
       })
       .then(({fileUrl, key}) => {
-        //console.log(fileUrl)
         this.billId = key
         this.fileUrl = fileUrl
-        this.fileName = fileName
       }).catch(error => console.error(error))
+
+    } else {
+      $('#error-message').text('Ce format n\'est pas accepté, veuillez inclure un fichier de type .jpg, .jpeg ou .png')
+      $('#error-message').css({ color: 'red' })
+      return false
+    }
   }
+
+
   handleSubmit = e => {
     e.preventDefault()
-    //console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`)
+    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,
@@ -65,12 +69,16 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
-    this.updateBill(bill)
-    this.onNavigate(ROUTES_PATH['Bills'])
+ 
+    if (file.type.match(/^image\/(jpg|jpeg|png)$/)) {
+      this.updateBill(bill)
+      this.onNavigate(ROUTES_PATH['Bills'])
+    } else {
+      fileInput.classList.add('invalid')
+    }
   }
 
   // not need to cover this function by tests
-  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store

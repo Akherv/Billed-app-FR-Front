@@ -12,10 +12,13 @@ class Api {
     return jsonOrThrowIfError(await fetch(`${this.baseUrl}${url}`, {headers, method: 'GET'}))
   }
   async post({url, data, headers}) {
-    return jsonOrThrowIfError(await fetch(`${this.baseUrl}${url}`, {headers, method: 'POST', body: data}))
+   const res = await fetch(`${this.baseUrl}${url}`, {headers, method: 'POST', body: data})
+    return jsonOrThrowIfError(res)
   }
   async delete({url, headers}) {
-    return jsonOrThrowIfError(await fetch(`${this.baseUrl}${url}`, {headers, method: 'DELETE'}))
+    const res = await fetch(`${this.baseUrl}${url}`, {headers, method: 'DELETE'})
+    console.log(res)
+    return jsonOrThrowIfError(res)
   }
   async patch({url, data, headers}) {
     return jsonOrThrowIfError(await fetch(`${this.baseUrl}${url}`, {headers, method: 'PATCH', body: data}))
@@ -45,10 +48,12 @@ class ApiEntity {
     return await (this.api.patch({url: `/${this.key}/${selector}`, headers: getHeaders(headers), data}))
   }
   async create({data, headers = {}}) {
-    return await (this.api.post({url: `/${this.key}`, headers: getHeaders(headers), data}))
+    const res = await (this.api.post({url: `/${this.key}`, headers: getHeaders(headers), data}))
+    return res
   }
   async delete({selector, headers = {}}) {
-    return await (this.api.delete({url: `/${this.key}/${selector}`, headers: getHeaders(headers)}))
+    const res = await (this.api.delete({url: `/${this.key}/${selector}`, headers: getHeaders(headers)}))
+    return res
   }
 }
 
@@ -66,6 +71,7 @@ class Store {
   ref = (path) => this.store.doc(path)
 
   bill = bid => (new ApiEntity({key: 'bills', api: this.api})).select({selector: bid})
+  billClean = bid => (new ApiEntity({key: 'bills', api: this.api})).delete({selector: bid})
   bills = () => new ApiEntity({key: 'bills', api: this.api})
 }
 
