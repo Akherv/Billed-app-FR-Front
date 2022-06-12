@@ -37,7 +37,7 @@ export const card = (bill) => {
   return (`
     <div class='bill-card' id='open-bill${bill.id}' data-testid='open-bill${bill.id}'>
       <div class='bill-card-name-container'>
-        <div class='bill-card-name'> ${firstName} ${lastName} </div>
+        <div class='bill-card-name' data-testid='bill-card-name'> ${firstName} ${lastName} </div>
         <span class='bill-card-grey'> ... </span>
       </div>
       <div class='name-price-container'>
@@ -86,7 +86,6 @@ export default class {
   }
 
   handleEditTicket(e, bill, bills) {
-    //console.log(this.counter,this.id)
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id
     if (this.counter % 2 === 0) {

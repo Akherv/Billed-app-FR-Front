@@ -68,7 +68,7 @@ export default class {
                   status: formatStatus(doc.status)
                 }
               } catch(e) {
-                throw error;
+                throw error();
               }
             })
           return bills

@@ -6,6 +6,7 @@ import { screen } from "@testing-library/dom"
 import DashboardFormUI from "../views/DashboardFormUI.js"
 import { formatDate } from "../app/format.js"
 
+
 const bill = {
   "id": "47qAXb6fIm2zOKkLzMro",
   "vat": "80",
@@ -40,8 +41,7 @@ const billrefused = {
 describe('Given I am connected as an Admin and I am on Dashboard Page', () => {
   describe('When bill data is passed to DashboardUI', () => {
     test(('Then, it should them in the page'), () => {
-      const html = DashboardFormUI(bill)
-      document.body.innerHTML = html
+      document.body.innerHTML = DashboardFormUI(bill)
       expect(screen.getByText(bill.vat)).toBeTruthy()
       expect(screen.getByText(bill.type)).toBeTruthy()
       expect(screen.getByText(bill.commentary)).toBeTruthy()
@@ -54,8 +54,7 @@ describe('Given I am connected as an Admin and I am on Dashboard Page', () => {
   })
   describe('When pending bill is passed to DashboardUI', () => {
     test(('Then, it should show button and textArea'), () => {
-      const html = DashboardFormUI(billPending)
-      document.body.innerHTML = html
+      document.body.innerHTML = DashboardFormUI(billPending)
       expect(screen.getByText("Accepter")).toBeTruthy()
       expect(screen.getByText("Refuser")).toBeTruthy()
       expect(screen.getByTestId("commentary2")).toBeTruthy()
@@ -63,17 +62,14 @@ describe('Given I am connected as an Admin and I am on Dashboard Page', () => {
   })
   describe('When accepted bill is passed to DashboardUI', () => {
     test(('Then, it should show admin commentary'), () => {
-      const html = DashboardFormUI(billAccepted)
-      document.body.innerHTML = html
+      document.body.innerHTML = DashboardFormUI(billAccepted)
       expect(screen.getByText(bill.commentAdmin)).toBeTruthy()
     })
   })
   describe('When refused bill is passed to DashboardUI', () => {
     test(('Then, it should show admin commentary'), () => {
-      const html = DashboardFormUI(billrefused)
-      document.body.innerHTML = html
+      document.body.innerHTML = DashboardFormUI(billrefused)
       expect(screen.getByText(bill.commentAdmin)).toBeTruthy()
     })
   })
 })
-

@@ -1,19 +1,21 @@
 /**
  * @jest-environment jsdom
  */
-
+import '@testing-library/jest-dom/extend-expect'
 import {fireEvent, screen, waitFor} from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
-import DashboardFormUI from "../views/DashboardFormUI.js"
-import DashboardUI from "../views/DashboardUI.js"
+
 import Dashboard, { filteredBills, cards } from "../containers/Dashboard.js"
-import { ROUTES, ROUTES_PATH } from "../constants/routes"
+import DashboardUI from "../views/DashboardUI.js"
+import DashboardFormUI from "../views/DashboardFormUI.js"
+
 import { localStorageMock } from "../__mocks__/localStorage.js"
+import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import mockStore from "../__mocks__/store"
+jest.mock("../app/store", () => mockStore)
 import { bills } from "../fixtures/bills"
 import router from "../app/Router"
 
-jest.mock("../app/store", () => mockStore)
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -93,6 +95,35 @@ describe('Given I am connected as an Admin', () => {
       expect(screen.getByTestId(`open-billBeKy5Mo4jkmdfPGYpTxZ`)).toBeTruthy()
     })
   })
+  describe('When I am on Dashboard page and I click on arrow already open', () => {
+    test('Then, tickets list should hide', async () => {
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Admin'
+      }))
+
+      const dashboard = new Dashboard({
+        document, onNavigate, store: null, bills:bills, localStorage: window.localStorage
+      })
+      document.body.innerHTML = DashboardUI({ data: { bills } })
+      
+      const handleShowTickets1 = jest.fn((e) => dashboard.handleShowTickets(e, bills, 1))
+
+      const icon1 = screen.getByTestId('arrow-icon1')
+      icon1.addEventListener('click', handleShowTickets1)
+      userEvent.click(icon1)
+      userEvent.click(icon1)
+      expect(handleShowTickets1).toHaveBeenCalled()
+      expect(handleShowTickets1).toHaveBeenCalledTimes(2)
+      expect(icon1).toHaveClass('off')
+     
+    })
+  })
   describe('When I am on Dashboard page and I click on edit icon of a card', () => {
     test('Then, right form should be filled',  () => {
 
@@ -150,7 +181,6 @@ describe('Given I am connected as an Admin', () => {
       expect(bigBilledIcon).toBeTruthy()
     })
   })
-
   describe('When I am on Dashboard and there are no bills', () => {
     test('Then, no cards should be shown', () => {
       document.body.innerHTML = cards([])
@@ -158,6 +188,30 @@ describe('Given I am connected as an Admin', () => {
       expect(iconEdit).toBeNull()
     })
   })
+  describe('When I am on Dashboard and there are bills', () => {
+    test('Then, if email include a dot it should split it', () => {
+      const bill = [{
+        "id": "47qAXb6fIm2zOKkLzMro",
+        "vat": "80",
+        "fileUrl": "https://test.storage.tld/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a",
+        "status": "pending",
+        "type": "Hôtel et logement",
+        "commentary": "séminaire billed",
+        "name": "encore",
+        "fileName": "preview-facture-free-201801-pdf-1.jpg",
+        "date": "2004-04-04",
+        "amount": 400,
+        "commentAdmin": "ok",
+        "email": "firstName.lastName@a",
+        "pct": 20
+      },
+    ]
+      document.body.innerHTML = cards(bill)
+      const emailEdit = screen.queryByTestId('bill-card-name')
+      expect(emailEdit.textContent.trim()).toBe('firstName lastName')
+    })
+  })
+
 })
 
 describe('Given I am connected as Admin, and I am on Dashboard page, and I clicked on a pending bill', () => {
@@ -179,9 +233,10 @@ describe('Given I am connected as Admin, and I am on Dashboard page, and I click
 
       const acceptButton = screen.getByTestId("btn-accept-bill-d")
       const handleAcceptSubmit = jest.fn((e) => dashboard.handleAcceptSubmit(e, bills[0]))
-      acceptButton.addEventListener("click", handleAcceptSubmit)
+      acceptButton.addEventListener("click", (e)=>handleAcceptSubmit(e, bills[0]))
       fireEvent.click(acceptButton)
       expect(handleAcceptSubmit).toHaveBeenCalled()
+      expect(handleAcceptSubmit.mock.calls[0].length).toBe(2)
       const bigBilledIcon = screen.queryByTestId("big-billed-icon")
       expect(bigBilledIcon).toBeTruthy()
     })
