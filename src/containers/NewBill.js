@@ -11,6 +11,7 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`)
     file.addEventListener("change", this.handleChangeFile)
     this.fileUrl = null
+    this.fileType = null
     this.fileName = null
     this.billId = null
     this.formData = null
@@ -19,7 +20,8 @@ export default class NewBill {
   handleChangeFile = e => {
     e.preventDefault()
     const fileInput = this.document.querySelector(`input[data-testid="file"]`)
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    const file = fileInput.files[0]
+    this.fileType = file.type
     const filePath = e.target.value.split(/\\/g)
     this.fileName = filePath[filePath.length-1]
     this.formData = new FormData()
@@ -27,7 +29,7 @@ export default class NewBill {
     this.formData.append('file', file)
     this.formData.append('email', email)
 
-    if (file.type.match(/^image\/(jpg|jpeg|png)$/)) {
+    if (this.fileType.match(/^image\/(jpg|jpeg|png)$/)) {
       $('#error-message').text('')
       fileInput.classList.remove('invalid')
       this.store
@@ -54,7 +56,6 @@ export default class NewBill {
   handleSubmit = e => {
     e.preventDefault()
     const fileInput = this.document.querySelector(`input[data-testid="file"]`)
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,
@@ -70,7 +71,7 @@ export default class NewBill {
       status: 'pending'
     }
  
-    if (file.type.match(/^image\/(jpg|jpeg|png)$/)) {
+    if (this.fileType.match(/^image\/(jpg|jpeg|png)$/)) {
       this.updateBill(bill)
       this.onNavigate(ROUTES_PATH['Bills'])
     } else {

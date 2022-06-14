@@ -354,7 +354,7 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-// test d'intégration GET
+//test d'intégration GET
 describe("When I navigate to Bills Page", () => {
   beforeEach(() => {
     jest.spyOn(mockStore, "bills")
@@ -375,6 +375,7 @@ describe("When I navigate to Bills Page", () => {
   })
   afterEach(()=> {
     document.body.innerHTML = ''
+    jest.clearAllMocks
   })
   test("fetches bills from mock API GET", async () => {
     document.body.innerHTML = BillsUI({
@@ -384,19 +385,24 @@ describe("When I navigate to Bills Page", () => {
     window.onNavigate(ROUTES_PATH.Bills)
 
     await waitFor(() => screen.getByText("Mes notes de frais"))
-    expect(screen.getByText("Mes notes de frais")).toBeTruthy()
     const typeTitle = await waitFor(() => screen.getByText("Type"))
-    expect(typeTitle).toBeTruthy()
     const NomTitle = await waitFor(() => screen.getByText("Nom"))
-    expect(NomTitle).toBeTruthy()
     const dateTitle = await waitFor(() => screen.getByText("Date"))
-    expect(dateTitle).toBeTruthy()
     const MontantTitle = await waitFor(() => screen.getByText("Montant"))
-    expect(MontantTitle).toBeTruthy()
     const statutTitle = await waitFor(() => screen.getByText("Statut"))
-    expect(statutTitle).toBeTruthy()
     const actionsTitle = await waitFor(() => screen.getByText("Actions"))
+
+    expect(screen.getByText("Mes notes de frais")).toBeTruthy()
+    expect(typeTitle).toBeTruthy()
+    expect(NomTitle).toBeTruthy()
+    expect(dateTitle).toBeTruthy()
+    expect(MontantTitle).toBeTruthy()
+    expect(statutTitle).toBeTruthy()
     expect(actionsTitle).toBeTruthy()
+
+    const listBill = await mockStore.bills().list()
+    expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
+    expect(listBill.length).toBe(4)
   })
   describe("When an error occurs on API", () => {
     test("fetches bills from an API and fails with 404 message error", async () => {
@@ -411,7 +417,7 @@ describe("When I navigate to Bills Page", () => {
       window.onNavigate(ROUTES_PATH.Bills)
 
       await new Promise(process.nextTick);
-      const message = await screen.getByText(/Erreur 404/)
+      const message = screen.getByText(/Erreur 404/)
 
       expect(message).toBeTruthy()
     })
@@ -427,7 +433,7 @@ describe("When I navigate to Bills Page", () => {
       window.onNavigate(ROUTES_PATH.Bills)
 
       await new Promise(process.nextTick);
-      const message = await screen.getByText(/Erreur 500/)
+      const message = screen.getByText(/Erreur 500/)
 
       expect(message).toBeTruthy()
     })
