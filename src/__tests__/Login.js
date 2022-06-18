@@ -126,72 +126,7 @@ describe("Given that I am a user on login page", () => {
         })
       );
     });
-    test("It should renders Bills page", () => {
-      expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
-    });
   });
-
-  // describe("When I do fill fields in correct format and I click on employee button Login In, nut an error occur in API", () => {
-  //   test.only("Then it should catch the error", () => {
-  //     Object.defineProperty(window, "localStorage", {
-  //       value: {
-  //         getItem: jest.fn(() => null),
-  //         setItem: jest.fn(() => null),
-  //       },
-  //       writable: true,
-  //     });
-  //     const onNavigate = (pathname) => {
-  //       document.body.innerHTML = ROUTES({
-  //         pathname
-  //       });
-  //     };
-  //     let PREVIOUS_LOCATION = "";
-  //     const store = jest.fn();
-  //     const login = new Login({
-  //       document,
-  //       localStorage: window.localStorage,
-  //       onNavigate,
-  //       PREVIOUS_LOCATION,
-  //       store,
-  //     });
-
-  //     document.body.innerHTML = LoginUI();
-
-  //     const inputData = {
-  //       email: "johndoe@email.com",
-  //       password: "azerty",
-  //     };
-
-  //     const form = screen.getByTestId("form-employee");
-  //     const inputEmailUser = screen.getByTestId("employee-email-input");
-  //     const inputPasswordUser = screen.getByTestId("employee-password-input");
-  //     const handleSubmitEmployee = jest.fn(login.handleSubmitEmployee);
-
-  //     const spy = jest.spyOn(login, 'login')
-  //     const isSpying = login.login()
-
-     
-  //     form.addEventListener("submit", handleSubmitEmployee);
-
-  //     fireEvent.change(inputEmailUser, {
-  //       target: {
-  //         value: inputData.email
-  //       }
-  //     });
-  //     fireEvent.change(inputPasswordUser, {
-  //       target: {
-  //         value: inputData.password
-  //       }
-  //     });
-  //     fireEvent.submit(form);
-
-  //    expect(isSpying).toHaveBeenCalled()
-      
-  //   });
-  //   test("It should renders Bills page", () => {
-  //     expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
-  //   });
-  // });
 });
 
 describe("Given that I am a user on login page", () => {

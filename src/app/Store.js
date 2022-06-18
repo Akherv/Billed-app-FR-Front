@@ -58,7 +58,6 @@ class ApiEntity {
 }
 
 
-
 class Store {
   constructor() {
     this.api = new Api({baseUrl: 'http://localhost:5678'})

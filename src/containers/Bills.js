@@ -11,7 +11,7 @@ export default class {
     if (buttonNewBill) buttonNewBill.addEventListener('click', this.handleClickNewBill)
     const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`)
     if (iconEye) iconEye.forEach(icon => {
-      icon.addEventListener('click', () => this.handleClickIconEye(icon))
+      icon.addEventListener('click', this.handleClickIconEye)
     })
     new Logout({ document, localStorage, onNavigate })
   }
@@ -68,7 +68,12 @@ export default class {
                   status: formatStatus(doc.status)
                 }
               } catch(e) {
-                throw error();
+                console.log(e,'for',doc)
+                return {
+                  ...doc,
+                  date: doc.date,
+                  status: formatStatus(doc.status)
+                }
               }
             })
           return bills
