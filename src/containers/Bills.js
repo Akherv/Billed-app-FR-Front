@@ -11,7 +11,7 @@ export default class {
     if (buttonNewBill) buttonNewBill.addEventListener('click', this.handleClickNewBill)
     const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`)
     if (iconEye) iconEye.forEach(icon => {
-      icon.addEventListener('click', this.handleClickIconEye)
+      icon.addEventListener('click',() => this.handleClickIconEye(icon))
     })
     new Logout({ document, localStorage, onNavigate })
   }

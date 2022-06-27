@@ -14,8 +14,6 @@
  jest.mock("../app/store", () => mockStore)
  import {bills} from "../fixtures/bills.js"
  import router from "../app/Router.js";
-import { get } from 'jquery';
-import store from '../__mocks__/store';
 
 
 describe("Given I am connected as an employee", () => {
@@ -46,8 +44,8 @@ describe("Given I am connected as an employee", () => {
       const windowIcon = screen.getByTestId('icon-window')
       expect(windowIcon.classList.contains('active-icon')).toBe(true)
     })
-    test('Then the UI should throw loading', async () => {
-      // J'appelle la fonction onNavigate du router afin de me positionner sur la page Bills avec en argument loading = true
+    test('Then the UI should show loading', async () => {
+      // J'appelle la fonction onNavigate du router afin de me positionner sur la page Bills avec en paramètre loading = true
       // Je teste => si le message 'loading...' est bien présent sur la page
       const loading = true
       document.body.innerHTML = BillsUI({loading});
@@ -57,7 +55,7 @@ describe("Given I am connected as an employee", () => {
       expect(message).toBeTruthy()
       })
     test("Then bills should be ordered from earliest to latest", () => {
-      // Je recréé l'UI de la page Bills en y injectant en argument les bills mockés
+      // Je recréé l'UI de la page Bills en y injectant en paramètre les bills mockés
       // Je récupère un tableau des dates correspondant au format(année-mois-jour)
       // Je teste => si ce tableau de dates apparait bien dans un ordre anti-chronologique
       document.body.innerHTML = BillsUI({
@@ -69,7 +67,7 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)
     })
     test("Then bills should have a status", () => {
-      // Je recréé l'UI de la page Bills en y injectant en argument les bills mockés
+      // Je recréé l'UI de la page Bills en y injectant en paramètre les bills mockés
       // Je récupère un tableau les status des bills
       // Je teste => si les status sont bien présents
       document.body.innerHTML = BillsUI({
@@ -81,9 +79,9 @@ describe("Given I am connected as an employee", () => {
   })
 
   describe('When I am on Bills Page and there are no bill', () => {
-    test('Then the function getList should be called once and return once an empty array', () => {
+    test('Then the method getBills should be called once and return once an empty array', () => {
       // Je crée une instance de la classe Bills
-      // Je simule la fonction getBills en y injectant aucune bill
+      // Je simule la methode getBills en y injectant aucune bill
       // Je simule le remplissage des champs du formulaire, je déclenche l'upload du fichier de type png et je soumets le formulaire
       // Je teste=> si getBills a été appelée et si elle retourne bien un tableau vide
       const billMock = new Bills({
@@ -104,7 +102,7 @@ describe("Given I am connected as an employee", () => {
     })
     test('Then the list of bills should be empty on the UI', () => {
       // Je crée l'UI de la page Bills
-      // J'y injecte en argument aucune bill
+      // J'y injecte en paramètre aucune bill
       // Je récupère la liste des bills
       // Je teste=> si la liste des bills retourne aucune valeur
       document.body.innerHTML = BillsUI({
@@ -118,7 +116,7 @@ describe("Given I am connected as an employee", () => {
   describe('When I am on Bills Page and there are multiple bill', () => {
     test('Then, the list of bills should be called once and return data', () => {
       // Je crée une instance de la classe Bills
-      // Je simule la fonction getBills en y injectant 2 bills
+      // Je simule la methode getBills en y injectant 2 bills
       // Je teste=> si getBills a été appelée et si elle retourne bien un tableau des bills
       const billsMock = new Bills({
         document,
@@ -169,7 +167,7 @@ describe("Given I am connected as an employee", () => {
     })
     test('Then the list of bills should have the length of data element', () => {
       // Je crée une instance de la classe Bills
-      // Je simule la fonction getBills en y injectant 2 bills
+      // Je simule la methode getBills en y injectant 2 bills
       // Je récupère la liste des bills
       // Je teste=> si la liste retourne bien un tableau de 2 bills
       const bill = [{
@@ -216,26 +214,43 @@ describe("Given I am connected as an employee", () => {
   })
 
   describe('When I am on Bills Page and an error occur', () => {
-    test('Then the function getBills should throw an error', async () => {
+    test('Then the method getBills should throw an error', async () => {
       // Je crée une instance de la classe Bills
-      // Je simule la fonction getBills en y implémentant un retour d'erreur
+      // Je simule la methode getBills en y implémentant un retour d'erreur
       // Je teste=> si getBills rejète bien une erreur
       const billsMock = new Bills({
         document,
         onNavigate,
-        store: null,
+        store: mockStore,
         localStorage
       })
+ 
+    const getBills =  jest.spyOn(billsMock, 'getBills').mockImplementation(() => {
+      return {
+        bills: () => {
+          return {
+            list: async () => {
+                      try {
+                        return await Promise.resolve({});
+                      } catch (e) {
+                        console.log(e);
+                        expect(console.log.mock.calls[0][0]).toBe(e);
+                      }
+                    }
+               }
+          }
+      }
+    })
+    try {
+        await getBills()
+    } catch (e) {
+        expect(async()=> {await getBills()}).rejects.toThrow(e)
+        expect(async()=> {await getBills()}).toReturn()
+    }
 
-      const getBills = jest.fn(() => billsMock.getBills())
-
-     getBills.mockImplementation(() => {
-        throw new Error();
-      });
-      expect(() => getBills()).toThrow()
     })
     test('Then the UI should throw an error', async () => {
-      // Je recréé l'UI de la page Bills en y injectant en argument error = true
+      // Je recréé l'UI de la page Bills en y injectant en paramètre error = true
       // Je teste => si un message d'erreur est bien présent
     const error = true
     document.body.innerHTML = BillsUI({error});
@@ -250,9 +265,9 @@ describe("Given I am connected as an employee", () => {
     test("Then it should call the Eventlistener handleClickNewBill once", () => {
       // J'appelle la fonction onNavigate du router
       // Je crée une instance de la classe Bills et je recrée une page Bills UI avec les bills mockées
-      // Je simule la fonction handleClickNewBill et son Eventlistener
+      // Je simule la methode handleClickNewBill et son Eventlistener
       // Je déclenche le click sur le bouton pour appeller handleclickNewBill
-      // Je teste=> si la fonction a été appelée
+      // Je teste=> si la methode a été appelée
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({
           pathname
@@ -283,7 +298,7 @@ describe("Given I am connected as an employee", () => {
     test("Then it should open the NewBills page ", () => {
       // J'appelle la fonction onNavigate du router
       // Je crée une instance de la classe Bills et je recrée une page Bills UI avec les bills mockées
-      // Je simule la fonction handleClickNewBill et son Eventlistener
+      // Je simule la methode handleClickNewBill et son Eventlistener
       // Je déclenche le click sur le bouton pour appeller handleclickNewBill
       // Je teste => si la je suis bien redirigé vers la page NewBill
       const onNavigate = (pathname) => {
@@ -321,9 +336,9 @@ describe("Given I am connected as an employee", () => {
     test("Then it should call the Eventlistener handleClickIconEye once", () => {
       // J'appelle la fonction onNavigate du router
       // Je crée une instance de la classe Bills et je recrée une page Bills UI avec les bills mockées
-      // Je simule la fonction handleClickIconEye et son Eventlistener
+      // Je simule la methode handleClickIconEye et son Eventlistener
       // Je déclenche le click sur la première icône pour appeller handleclickIconEye
-      // Je teste => si la fonction a été appelée avec un argument et un retour
+      // Je teste => si la methode a été appelée avec un paramètre et un retour
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({
           pathname
@@ -357,7 +372,7 @@ describe("Given I am connected as an employee", () => {
     test("Then it should open the Modale ", async () => {
       // J'appelle la fonction onNavigate du router
       // Je crée une instance de la classe Bills et je recrée une page Bills UI avec les bills mockées
-      // Je simule la fonction handleClickIconEye et son Eventlistener
+      // Je simule la methode handleClickIconEye et son Eventlistener
       // Je déclenche le click sur la première icône pour appeller handleclickIconEye
       // Je teste => si la modale est ouverte
       const onNavigate = (pathname) => {
@@ -424,7 +439,7 @@ describe("When I navigate to Bills Page", () => {
   test("fetches bills from mock API GET", async () => {
     // J'appelle la fonction onNavigate de base afin de me positionner sur la page NewBill, j'injecte l'HTML de BillsUI avec les datas mockées de bills.
     // Je récupère les différents titres des colonnes de la liste 
-    // Je teste => si la page bills est bien affichées et si la liste des bills est du même nombre que la liste des bills injectées en argument
+    // Je teste => si la page bills est bien affichées et si la liste des bills est du même nombre que la liste des bills injectées en paramètre
     window.onNavigate(ROUTES_PATH.Bills)
 
     document.body.innerHTML = BillsUI({
@@ -454,7 +469,7 @@ describe("When I navigate to Bills Page", () => {
   describe("When an error occurs on API", () => {
     test("fetches bills from an API and fails with 404 message error", async () => {
       // Je simule l'appel à l'api qui se termine par un reject
-      // Je recrée l'UI de Bills lorsque son argument error est true
+      // Je recrée l'UI de Bills lorsque son paramètre error est true
       // Je teste => si j'ai bien un message d'erreur 404 qui est présent
       mockStore.bills.mockImplementationOnce(() => {
         return {
@@ -473,7 +488,7 @@ describe("When I navigate to Bills Page", () => {
     })
     test("fetches messages from an API and fails with 500 message error", async () => {
       // Je simule l'appel à l'api qui se termine par un reject
-      // Je recrée l'UI de Bills lorsque son argument error est true
+      // Je recrée l'UI de Bills lorsque son paramètre error est true
       // Je teste => si j'ai bien un message d'erreur 500 qui est présent
       mockStore.bills.mockImplementationOnce(() => {
         return {

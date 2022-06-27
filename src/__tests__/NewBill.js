@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import '@testing-library/jest-dom/extend-expect'
-import { screen, waitFor, fireEvent } from "@testing-library/dom"
+import { screen, fireEvent } from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
 
 import NewBill from "../containers/NewBill.js"
@@ -14,6 +14,7 @@ import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import mockStore from "../__mocks__/store"
 jest.mock("../app/store", () => mockStore)
 import router from "../app/Router.js";
+import store from '../app/store'
 
 
 describe(" Given I am connected as an employee", () => {
@@ -102,11 +103,11 @@ describe(" Given I am connected as an employee", () => {
         jest.restoreAllMocks()
       })
 
-      test('If file is of type jpg, handleChangeFile should be call and the type of file should match the pattern validation', async () => {
+      test('If file is of type jpg, handleChangeFile should be call and the type of file should match the pattern validation', () => {
         // J'appelle la fonction onNavigate du router afin de me positionner sur la page NewBill, je crée une instance de la classe NewBill et j'injecte l'HTML de NewBillsUI.
-        // Je simule la fonction handleChangeFile et son eventListener
+        // Je simule la méthode handleChangeFile et son eventListener
         // Je déclenche l'upload du fichier de type jpg
-        // Je teste => si handleChangeFile a été appelée et si la classe 'invalid' est absente.
+        // Je teste => si handleChangeFile a été appelée, si 1 seul fichier a été soumis et si la classe 'invalid' est absente.
         window.onNavigate(ROUTES_PATH.NewBill)
 
         const newBill = new NewBill({
@@ -134,7 +135,7 @@ describe(" Given I am connected as an employee", () => {
       })
       test('If file is of type jpeg, handleChangeFile should be call and the type of file should match the pattern validation ', () => {
         // J'appelle la fonction onNavigate du router afin de me positionner sur la page NewBill, je crée une instance de la classe NewBill et j'injecte l'HTML de NewBillsUI.
-        // Je simule la fonction handleChangeFile et son eventListener
+        // Je simule la méthode handleChangeFile et son eventListener
         // Je déclenche l'upload du fichier de type jpeg
         // Je teste => si handleChangeFile a été appelée, si 1 seul fichier a été soumis, si la classe 'invalid' est absente.
         window.onNavigate(ROUTES_PATH.NewBill)
@@ -164,7 +165,7 @@ describe(" Given I am connected as an employee", () => {
       })
       test('If file is of type png, handleChangeFile should be call and the type of file should match the pattern validation ', () => {
         // J'appelle la fonction onNavigate du router afin de me positionner sur la page NewBill, je crée une instance de la classe NewBill et j'injecte l'HTML de NewBillsUI.
-        // Je simule la fonction handleChangeFile et son eventListener
+        // Je simule la méthode handleChangeFile et son eventListener
         // Je déclenche l'upload du fichier de type png
         // Je teste => si handleChangeFile a été appelée, si 1 seul fichier a été soumis, si la classe 'invalid' est absente.
         window.onNavigate(ROUTES_PATH.NewBill)
@@ -194,7 +195,7 @@ describe(" Given I am connected as an employee", () => {
       })
       test('If file is of another type, it should add an error message', () => {
         // J'appelle la fonction onNavigate du router afin de me positionner sur la page NewBill, je crée une instance de la classe NewBill et j'injecte l'HTML de NewBillsUI.
-        // Je simule la fonction handleChangeFile, son eventListener et je récupère l'élément HTML errorMessage.
+        // Je simule la méthode handleChangeFile, son eventListener et je récupère l'élément HTML errorMessage.
         // Je déclenche l'upload du fichier de type pdf
         // Je teste => si handleChangeFile a été appelée, si 1 seul fichier a été soumis, si la classe 'invalid' est présente.
         window.onNavigate(ROUTES_PATH.NewBill)
@@ -225,7 +226,7 @@ describe(" Given I am connected as an employee", () => {
       })
       test('If an error occur while calling handleChangeFile on the API', async () => {
         // J'appelle la fonction onNavigate du router afin de me positionner sur la page NewBill, je crée une instance de la classe NewBill et j'injecte l'HTML de NewBillsUI.
-        // Je simule la fonction handleChangeFile, son eventListener, je récupère l'élément errorMessage et j'implémente une promesse rejetée lors de l'appel à la fonction create
+        // Je simule la méthode handleChangeFile, son eventListener, je récupère l'élément errorMessage et j'implémente une promesse rejetée lors de l'appel à la fonction create
         // Je déclenche l'upload du fichier de type pdf
         // Je teste => si handleChangeFile a été appelée, si 1 seul fichier a été soumis, si un message d'erreur est présent
         window.onNavigate(ROUTES_PATH.NewBill)
@@ -269,7 +270,7 @@ describe(" Given I am connected as an employee", () => {
   })
 
   describe('When I do fill fields and I click on submit button', () => {
-    // Avant chaque tests, j'initialise le local storage simulé avec un utilisateur de type employee, puis je crée le root HTML de base sur lequel s'appui le router. Après chaque test, je restaure les données simulées à leurs valeurs initiales
+    // Avant chaque tests,je spy la fonction bills du mockstore, j'initialise le local storage simulé avec un utilisateur de type employee, puis je crée le root HTML de base sur lequel s'appui le router. Après chaque test, je restaure les données simulées à leurs valeurs initiales
     beforeEach(() => {
       jest.spyOn(mockStore, "bills")
       Object.defineProperty(window, 'localStorage', {
@@ -289,7 +290,7 @@ describe(" Given I am connected as an employee", () => {
 
     test('If fields is in correct format, it should call the submit handler', () => {
       // J'inclu la fonction simulée onNavigate afin de gérer les changements de pages, j'appelle la fonction onNavigate de base afin de me positionner sur la page NewBill, je crée une instance de la classe NewBill et j'injecte l'HTML de NewBillsUI.
-      // Je simule la fonction handleChangeFile, je spy handleSubmit et leurs eventListeners
+      // Je simule la méthode handleChangeFile, je spy handleSubmit et leurs eventListeners
       // Je simule le remplissage des champs du formulaire, je déclenche l'upload du fichier de type png et je soumets le formulaire
       // Je teste => si handleSubmit a été appelée, si la classe 'invalid' est absente et si la page est redirigée vers Bills
       const onNavigate = (pathname) => {
@@ -346,7 +347,7 @@ describe(" Given I am connected as an employee", () => {
     })
     test('If fields is in incorrect format, it should not call the submit handler and add an invalid class border', () => {
       // J'inclu la fonction simulée onNavigate afin de gérer les changements de pages, j'appelle la fonction onNavigate de base afin de me positionner sur la page NewBill, je crée une instance de la classe NewBill et j'injecte l'HTML de NewBillsUI.
-      // Je simule la fonction handleChangeFile, je spy handleSubmit et leurs eventListeners
+      // Je simule la méthode handleChangeFile, je spy handleSubmit et leurs eventListeners
       // Je simule le remplissage des champs du formulaire, je déclenche l'upload du fichier de type png et je soumets le formulaire
       // Je teste => si handleSubmit a été appelée, si la classe 'invalid' est présente et si la page n'a pas été redirigée
       const onNavigate = (pathname) => {
@@ -401,7 +402,7 @@ describe(" Given I am connected as an employee", () => {
     })
     test('If an error occur while calling handleSubmit on the API', async () => {
       // J'inclu la fonction simulée onNavigate afin de gérer les changements de pages, j'appelle la fonction onNavigate de base afin de me positionner sur la page NewBill, je crée une instance de la classe NewBill et j'injecte l'HTML de NewBillsUI.
-      // Je simule la fonction handleChangeFile, je spy handleSubmit et leurs eventListeners
+      // Je simule la méthode handleChangeFile, je spy handleSubmit et leurs eventListeners
       // Je simule le remplissage des champs du formulaire, je déclenche l'upload du fichier de type png et je soumets le formulaire
       // Je teste => si handleSubmit et rejectUpdateMock ont été appelé.
       const onNavigate = (pathname) => {
@@ -471,7 +472,7 @@ describe(" Given I am connected as an employee", () => {
   describe("When I send a NewBill", () => {
       // Avant tous les tests, je spy la fonction bills du mockstore, j'initialise le local storage simulé avec un utilisateur de type employee, puis je crée le root HTML de base sur lequel s'appui le router. Après chaque test, je restaure les données simulées à leurs valeurs initiales
     beforeEach(() => {
-      jest.spyOn(mockStore, "bills")
+      jest.spyOn(store, "bills")
       Object.defineProperty(
         window,
         'localStorage', {
@@ -492,7 +493,7 @@ describe(" Given I am connected as an employee", () => {
     })
     test("create a new bills from mock API POST", async () => {
       // J'inclu la fonction simulée onNavigate afin de gérer les changements de pages, j'appelle la fonction onNavigate de base afin de me positionner sur la page NewBill, je crée une instance de la classe NewBill et j'injecte l'HTML de NewBillsUI.
-      // Je simule la fonction handleChangeFile, je spy handleSubmit et leurs eventListeners
+      // Je simule la méthode handleChangeFile, je spy handleSubmit et leurs eventListeners
       // Je simule le remplissage des champs du formulaire, je déclenche l'upload du fichier de type jpg et je soumets le formulaire
       // Je teste => si handleChangeFile,handleSubmit et l'api mockée ont été appelée et si la page est redirigée vers Bills
       const onNavigate = (pathname) => {
@@ -502,7 +503,7 @@ describe(" Given I am connected as an employee", () => {
       };
       window.onNavigate(ROUTES_PATH.NewBill)
 
-      const newBill = new NewBill({ document, onNavigate, store : mockStore, localStorage: window.localStorage })
+      const newBill = new NewBill({ document, onNavigate, store:mockStore, localStorage: window.localStorage })
 
       document.body.innerHTML = NewBillUI();
 
@@ -547,26 +548,26 @@ describe(" Given I am connected as an employee", () => {
     const handleSubmit = jest.spyOn(newBill, 'handleSubmit')
     const formNewBill = screen.getByTestId('form-new-bill')
 
-    const resolveUpdateMock =  mockStore.bills.mockImplementationOnce(() => {
+    mockStore.bills.mockImplementation(()=> {
       return {
         create: () => {
-          return Promise.resolve({fileUrl: 'https://localhost:3456/images/test.jpg', key: '1234'})
-          },
+          return Promise.resolve({fileUrl: `${newBill.fileUrl}`, key: '1234'})
+        },
         update: () => {
           return Promise.resolve({
-            "id": "47qAXb6fIm2zOKkLzMr2",
-            "vat": "70",
+            "id": "47qAXb6fIm2zOKkLzMro",
+            "vat": "80",
             "fileUrl": "https://test.storage.tld/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a",
             "status": "pending",
-            "type": "Transports",
-            "commentary": "...",
-            "name": "Vol Paris Londres",
-            "fileName": "testFile.jpg",
-            "date": "2022-04-04",
-            "amount": '348',
+            "type": "Hôtel et logement",
+            "commentary": "séminaire billed",
+            "name": "encore",
+            "fileName": "preview-facture-free-201801-pdf-1.jpg",
+            "date": "2004-04-04",
+            "amount": 400,
             "commentAdmin": "ok",
-            "email": "e@e",
-            "pct": '20'
+            "email": "a@a",
+            "pct": 20
           })
         }
       }
@@ -584,46 +585,14 @@ describe(" Given I am connected as an employee", () => {
     expect(handleChangeFile).toBeCalledTimes(1)
     expect(handleSubmit).toHaveBeenCalled()
     expect(handleSubmit).toBeCalledTimes(1)
+    expect(mockStore.bills).toHaveBeenCalled()
+    expect(mockStore.bills).toHaveBeenCalledTimes(2)
     expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
-    expect(resolveUpdateMock).toHaveBeenCalled()
-    // expect(screen.getAllByTestId('row')).toHaveLength(5)
-    // expect(updateBill).toHaveBeenCalled();
-    // expect(updateBill).toHaveBeenCalledTimes(1);
-    // expect(await mockStore.bills().update(bill)).toEqual({
-    //   "id": "47qAXb6fIm2zOKkLzMro",
-    //   "vat": "80",
-    //   "fileUrl": "https://firebasestorage.googleapis.com/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a",
-    //   "status": "pending",
-    //   "type": "Hôtel et logement",
-    //   "commentary": "séminaire billed",
-    //   "name": "encore",
-    //   "fileName": "preview-facture-free-201801-pdf-1.jpg",
-    //   "date": "2004-04-04",
-    //   "amount": 400,
-    //   "commentAdmin": "ok",
-    //   "email": "a@a",
-    //   "pct": 20
-    // })
-    // expect(updateBill.mock.results[0].value).toEqual({
-    //   "id": "47qAXb6fIm2zOKkLzMro",
-    //   "vat": "80",
-    //   "fileUrl": "https://firebasestorage.googleapis.com/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a",
-    //   "status": "pending",
-    //   "type": "Hôtel et logement",
-    //   "commentary": "séminaire billed",
-    //   "name": "encore",
-    //   "fileName": "preview-facture-free-201801-pdf-1.jpg",
-    //   "date": "2004-04-04",
-    //   "amount": 400,
-    //   "commentAdmin": "ok",
-    //   "email": "a@a",
-    //   "pct": 20
-    // })
     })
     describe("When an error occurs on API", () => {
       test("fetches bills from an API and fails with 404 message error", async () => {
       // Je simule l'appel à l'api qui se termine par un reject
-      // Je recrée l'UI de Bills lorsque son argument error est true
+      // Je recrée l'UI de Bills lorsque son paramètre error est true
       // Je teste => si j'ai bien un message d'erreur 404 qui est présent
       mockStore.bills.mockImplementationOnce(() => {
         return {
@@ -640,7 +609,7 @@ describe(" Given I am connected as an employee", () => {
       })
       test("fetches messages from an API and fails with 500 message error", async () => {
       // Je simule l'appel à l'api qui se termine par un reject
-      // Je recrée l'UI de Bills lorsque son argument error est true
+      // Je recrée l'UI de Bills lorsque son paramètre error est true
       // Je teste => si j'ai bien un message d'erreur 500 qui est présent
       mockStore.bills.mockImplementationOnce(() => {
         return {
